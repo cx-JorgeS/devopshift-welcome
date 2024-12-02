@@ -10,7 +10,7 @@ jobs:
     docker:
       - image: circleci/node:latest
     steps:
-      - run: |
+      - command: |
           if [ "<< pipeline.parameters.environment >>" == "staging" ]; then
             echo "Building in << pipeline.parameters.environment >> environment"
           else
@@ -24,7 +24,6 @@ jobs:
           command: |
             echo "Running on branch: $CIRCLE_BRANCH"
             pytest tests/
-
 workflows:
   build-workflow:
     jobs:
