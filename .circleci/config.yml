@@ -1,81 +1,41 @@
 version: 2.1
 
-orbs:
-  slack: circleci/slack@5.1.1
 
-parameters:
-  environment:
-    type: enum
-    enum: ["staging", "production"]
-    default: "staging"
+orbs:
+ slack: circleci/slack@4.9.3
+
 
 jobs:
-  build:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - checkout
-      - run:
-          name: Display Branch Name
-          command: |
-            echo "Building on branch: $CIRCLE_BRANCH"
-      - run:
-          name: Install Dependencies
-          command: |
-            echo "Installing dependencies..."
-            # Example: yarn install or npm install
-      - run:
-          name: Run Unit Tests
-          command: |
-            echo "Running unit tests..."
-            # Example: yarn test or npm test
-      - run:
-          name: Conditional Step Example
-          command: |
-            if [ "$CIRCLE_BRANCH" == "main" ]; then
-              echo "This is the main branch, performing additional actions."
-            else
-              echo "Not the main branch, skipping additional actions."
-            fi
-      - slack/notify:
-          event: pass
-          template: basic_success_1
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Mock Build Completed Successfully by JorgeS"
-                  }
-                }
-              ]
-            }
+ build:
+   docker:
+     - image: cimg/base:current
+   steps:
+     - checkout
+     - run:
+         name: Mock Build Step
+         command: |
+           echo "Starting the mock build..."
+           sleep 10
+           echo "Build complete."
+     - slack/notify:
+         event: pass
+         template: basic_success_1
+         custom: |
+           {
+             "blocks": [
+               {
+                 "type": "section",
+                 "text": {
+                   "type": "mrkdwn",
+                   "text": "*Mock Build Completed Successfully jorges"
+                 }
+               }
+             ]
+           }
 
-  deploy:
-    docker:
-      - image: cimg/base:stable
-    parameters:
-      environment:
-        type: enum
-        enum: ["staging", "production"]
-    steps:
-      - run:
-          name: Deploy Job
-          command: |
-            echo "Deploying to << parameters.environment >> environment"
 
 workflows:
-  version: 2
-  build-and-deploy:
-    jobs:
-      - build:
-        -context: slack-messaging
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only: workshop/circleci
-          environment: "production"
+ version: 2
+ simple-build-notify:
+   jobs:
+     - build:
