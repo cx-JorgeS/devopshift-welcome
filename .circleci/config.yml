@@ -39,4 +39,4 @@ workflows:
  simple-build-notify:
    jobs:
      - build:
-      context: slack-messaging
+        context: slack-messaging
