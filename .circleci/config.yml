@@ -2,31 +2,61 @@ version: 2.1
 
 parameters:
   environment:
-    type: string
+    type: enum
+    enum: ["staging", "production"]
     default: "staging"
 
 jobs:
   build:
     docker:
-      - image: circleci/node:latest
+      - image: cimg/base:stable
     steps:
-      - command: |
-          if [ "<< pipeline.parameters.environment >>" == "staging" ]; then
-            echo "Building in << pipeline.parameters.environment >> environment"
-          else
-            echo "No Build allowed"
-  test:
+      - checkout
+      - run:
+          name: Display Branch Name
+          command: |
+            echo "Building on branch: $CIRCLE_BRANCH"
+      - run:
+          name: Install Dependencies
+          command: |
+            echo "Installing dependencies..."
+            # Example: yarn install or npm install
+      - run:
+          name: Run Unit Tests
+          command: |
+            echo "Running unit tests..."
+            # Example: yarn test or npm test
+      - run:
+          name: Conditional Step Example
+          command: |
+            if [ "$CIRCLE_BRANCH" == "main" ]; then
+              echo "This is the main branch, performing additional actions."
+            else
+              echo "Not the main branch, skipping additional actions."
+            fi
+
+  deploy:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/base:stable
+    parameters:
+      environment:
+        type: enum
+        enum: ["staging", "production"]
     steps:
       - run:
-          name: "Run Tests"
+          name: Deploy Job
           command: |
-            echo "Running on branch: $CIRCLE_BRANCH"
-            pytest tests/
+            echo "Deploying to << parameters.environment >> environment"
+
 workflows:
-  build-workflow:
+  version: 2
+  build-and-deploy:
     jobs:
-      - build:
-          environment: "staging"
-      - test:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: main
+          environment: "production"
