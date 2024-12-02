@@ -11,7 +11,7 @@ jobs:
       - image: circleci/node:latest
     steps:
       - run: |
-          if [ "pipeline.parameters.environment" == "staging" ]; then
+          if [ << pipeline.parameters.environment >> == "staging" ]; then
             echo "Building in << pipeline.parameters.environment >> environment"
           else
             echo "No Build allowed"
