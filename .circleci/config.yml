@@ -36,6 +36,7 @@ jobs:
 
 workflows:
  version: 2
- slack-messaging:
+ simple-build-notify:
    jobs:
      - build:
+      context: slack-messaging
