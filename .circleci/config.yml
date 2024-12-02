@@ -24,3 +24,10 @@ jobs:
           command: |
             echo "Running on branch: $CIRCLE_BRANCH"
             pytest tests/
+
+workflows:
+  build-workflow:
+    jobs:
+      - build:
+          environment: "staging"
+      - test:
