@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@5.1.1
+
 parameters:
   environment:
     type: enum
@@ -34,6 +37,21 @@ jobs:
             else
               echo "Not the main branch, skipping additional actions."
             fi
+      - slack/notify:
+          event: pass
+          template: basic_success_1
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Mock Build Completed Successfully by JorgeS"
+                  }
+                }
+              ]
+            }
 
   deploy:
     docker:
@@ -52,7 +70,8 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build
+      - build:
+        -context: slack-messaging
       - deploy:
           requires:
             - build
